@@ -41,8 +41,9 @@ def clusters_vacios(clusters):
 def calcular_mayor_diametro_cluster(grafo, clusters):
     distancia_maxima = 0
     for cluster, vertices in clusters.items():
-        distancia = calcular_distancia_max_cluster(grafo, vertices)
-        distancia_maxima = max(distancia_maxima, distancia)
+        if len(vertices) > 0:
+            distancia = calcular_distancia_max_cluster(grafo, vertices)
+            distancia_maxima = max(distancia_maxima, distancia)
     return distancia_maxima
 
 #poda: ya no llego
@@ -58,9 +59,8 @@ def alcanzan_vertices(vertices_restantes, clusters):
 def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
     # ya asigne todos
     if actual >= len(vertices):
-        if clusters_vacios(sol_temporal):
-            return sol_optima
-        if calcular_mayor_diametro_cluster(grafo, sol_temporal) < calcular_mayor_diametro_cluster(grafo, sol_optima):
+        diametro_actual = calcular_mayor_diametro_cluster(grafo, sol_temporal)
+        if clusters_vacios(sol_optima) or diametro_actual < calcular_mayor_diametro_cluster(grafo, sol_optima):
             return copy.deepcopy(sol_temporal)
         else:
             return sol_optima
@@ -80,19 +80,19 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
             continue  # paso al siguiente cluster
         
         #poda: ¿supero el diametro maximo de lo que ya tengo?
-        if not clusters_vacios(sol_temporal):
+        if not clusters_vacios(sol_optima):
             diametro_parcial = calcular_mayor_diametro_cluster(grafo, sol_temporal)
             diametro_optimo = calcular_mayor_diametro_cluster(grafo, sol_optima)
             if diametro_parcial >= diametro_optimo:
                 sol_temporal[cluster].pop()
                 continue
         
-        incluyendo = clustering_bt(grafo, vertices, actual + 1, sol_optima, sol_temporal, k)
+        incluyendo = clustering_bt(grafo, vertices, actual + 1, mejor_solucion, sol_temporal, k)
         
         diametro_incluyendo = calcular_mayor_diametro_cluster(grafo, incluyendo)
         diametro_mejor_solucion = calcular_mayor_diametro_cluster(grafo, mejor_solucion)
         
-        if diametro_incluyendo < diametro_mejor_solucion:
+        if clusters_vacios(mejor_solucion) or diametro_incluyendo < diametro_mejor_solucion:
             mejor_solucion = copy.deepcopy(incluyendo)
             
         #saco vertice de ese cluster
