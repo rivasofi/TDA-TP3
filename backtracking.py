@@ -29,7 +29,7 @@ import copy
 def generar_clusters(k):
     clusters = {}
     for i in range(0, k):
-        clusters[i] = []
+        clusters[f"Cluster {i}"] = []
     return clusters
 
 def clusters_vacios(clusters):
@@ -110,6 +110,9 @@ def clustering_optimizacion(grafo, k):
     # nunca voy a poder llenar k-clusters.
 
     if len(vertices) < k:
-        return None
+        return None, None
 
-    return clustering_bt(grafo, vertices, 0, sol_optima, sol_temporal, k)
+    clusters = clustering_bt(grafo, vertices, 0, sol_optima, sol_temporal, k)
+    diametro = calcular_mayor_diametro_cluster(grafo, clusters)
+    
+    return clusters, diametro
