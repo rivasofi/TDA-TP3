@@ -56,6 +56,25 @@ def alcanzan_vertices(vertices_restantes, clusters):
     
     return vertices_restantes >= clusters_vacios_restantes
 
+# poda para evitar explorar combinaciones equivalentes entre sí
+def es_cluster_vacio_anterior(clusters, indice_actual):
+    i = 0
+    for cluster, vertices in clusters.items():
+        if i >= indice_actual:
+            break
+        if len(vertices) == 0:
+            return True
+        i += 1
+    return False
+
+# poda para evitar que un cluster crezca desmedidamente en relacion a otros
+def cluster_desbalanceado(clusters, total_vertices, k):
+    max_permitido = (total_vertices + k - 1) // k  # redondeo hacia arriba
+    for cluster, vertices in clusters.items():
+        if len(vertices) > max_permitido:
+            return True
+    return False
+
 def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
     # ya asigne todos
     if actual >= len(vertices):
@@ -68,8 +87,13 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
     vertice = vertices[actual]
     mejor_solucion = sol_optima
     # pongo el vertice en que cluster?
+    indice_cluster = 0
     
     for cluster, v in sol_temporal.items():
+        #poda de simetria
+        if len(v) == 0 and es_cluster_vacio_anterior(sol_temporal, indice_cluster):
+            indice_cluster += 1
+            continue
         #pruebo vertice en un cluster
         sol_temporal[cluster].append(vertice)
         
@@ -79,6 +103,11 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
             sol_temporal[cluster].pop()
             continue  # paso al siguiente cluster
         
+        #poda: desbalanceo
+        if cluster_desbalanceado(sol_temporal, len(vertices), k):
+            sol_temporal[cluster].pop()
+            continue
+            
         #poda: ¿supero el diametro maximo de lo que ya tengo?
         if not clusters_vacios(sol_optima):
             diametro_parcial = calcular_mayor_diametro_cluster(grafo, sol_temporal)
@@ -88,7 +117,6 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
                 continue
         
         incluyendo = clustering_bt(grafo, vertices, actual + 1, mejor_solucion, sol_temporal, k)
-        
         diametro_incluyendo = calcular_mayor_diametro_cluster(grafo, incluyendo)
         diametro_mejor_solucion = calcular_mayor_diametro_cluster(grafo, mejor_solucion)
         
@@ -97,6 +125,7 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
             
         #saco vertice de ese cluster
         sol_temporal[cluster].pop()
+        indice_cluster += 1
 
     return mejor_solucion
 
