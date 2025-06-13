@@ -83,7 +83,7 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
             return copy.deepcopy(sol_temporal)
         else:
             return sol_optima
-
+    
     vertice = vertices[actual]
     mejor_solucion = sol_optima
     # pongo el vertice en que cluster?
@@ -98,7 +98,8 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
         sol_temporal[cluster].append(vertice)
         
         vertices_restantes = len(vertices) - (actual + 1)
-        #poda: no me alcanzan los vertices para llenar los clusters vacíos
+        #poda: no me alcanzan los vertices para llenar los clusters vacíos: determinar los 
+        # k clusters para que la distancia máxima de cada cluster sea mínima. Piden siempre k clusters
         if not alcanzan_vertices(vertices_restantes, sol_temporal):
             sol_temporal[cluster].pop()
             continue  # paso al siguiente cluster
@@ -133,7 +134,7 @@ def clustering_optimizacion(grafo, k):
     # genero k clusters vacíos
     sol_optima = generar_clusters(k)
     sol_temporal = generar_clusters(k)
-    vertices = grafo.obtener_vertices()
+    vertices = sorted(grafo.obtener_vertices(), key=lambda v: -len(grafo.adyacentes(v)))
 
     # primera "poda", si la cantidad de vertices es menor a la cantidad de clusters
     # nunca voy a poder llenar k-clusters.
