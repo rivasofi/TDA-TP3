@@ -26,8 +26,6 @@ def generar_grafo_txt(n, aristas_extra):
         for u, v in sorted(aristas):
             f.write(f"{u},{v}\n")
 
-    print(f"Archivo generado: {archivo_salida} ({len(aristas)} aristas)")
-
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
