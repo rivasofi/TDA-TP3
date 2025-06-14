@@ -1,4 +1,5 @@
 import random
+from collections import deque
 
 class Grafo:
     def __init__(self, dirigido=False, vertices_init=[]):
@@ -58,3 +59,32 @@ class Grafo:
                 if self.dirigido or (v < w):  # Para evitar duplicados en no dirigido
                     resultado.append(f"{v} <--> {w} (peso {self.ady[v][w]})")
         return "\n".join(resultado)
+
+    # calcula distancias mínimas entre todos los pares de vértices usando BFS desde cada vértice
+    # guarda en un diccionario (v,u) la distancia (número de aristas) y devuelve la máxima distancia encontrada (diámetro del grafo)
+    def calcular_distancias(self):
+        V = self.obtener_vertices()
+        distancias = {}
+        max_dist = 0
+        for v in V:
+            distancias_v = self.bfs_distancias(v)
+            for u in V:
+                d = distancias_v.get(u, float('inf'))
+                distancias[(v, u)] = d
+                distancias[(u, v)] = d
+                if d != float('inf'):
+                    max_dist = max(max_dist, d)
+        return distancias, max_dist
+
+    # BFS para calcular la distancia mínima desde v a todos los otros vértices que puede alcanzar en el grafo
+    # retorna un diccionario distancias con las distancias mínimas
+    def bfs_distancias(self, v):
+        distancias = {v: 0}
+        cola = deque([v])
+        while cola:
+            actual = cola.popleft()
+            for vecino in self.adyacentes(actual):
+                if vecino not in distancias:
+                    distancias[vecino] = distancias[actual] + 1
+                    cola.append(vecino)
+        return distancias
