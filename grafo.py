@@ -88,3 +88,18 @@ class Grafo:
                     distancias[vecino] = distancias[actual] + 1
                     cola.append(vecino)
         return distancias
+
+    # primitivas agregadas para usar en el algoritmo de louvain:
+
+    # devuelve el grado del vértice v (cantidad de adyacentes que tiene)
+    def grado(self, v):
+        return len(self.ady[v])
+    
+    # devuelve una lista de todas las aristas del grafo como tuplas (v, w)
+    def aristas(self):
+        resultado = []
+        for v in self.ady:
+            for w in self.ady[v]:
+                if self.dirigido or (v < w):  # evitar duplicados si no dirigido
+                    resultado.append((v, w))
+        return resultado
