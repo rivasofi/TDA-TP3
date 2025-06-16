@@ -1,25 +1,3 @@
-# Escribir un algoritmo que, por backtracking, obtenga la solución óptima al problema (valga la redundancia) en la versión de optimización: Dado un grafo no
-# dirigido y no pesado, y un valor k, determinar los k clusters para que la distancia máxima de cada cluster sea mínima. Para esto, considerar minimizar el
-# máximo de las distancias máximas (es decir, de las distancias máximas de cada cluster, nos quedamos con la mayor, y ese valor es el que queremos minimizar).
-
-# tengo un grafo no dirigido y no pesado y un k. Tengo que separar el grafo en k clusters sin nodos repetidos tales que pueda minimizar la maxima distancia
-# mas grande
-
-# ejemplo:
-
-# Partición A:
-# Cluster 1: diámetro = 1
-# Cluster 2: diámetro = 4
-# Máximo = 4, Suma = 5
-
-# Partición B:
-# Cluster 1: diámetro = 3
-# Cluster 2: diámetro = 3
-# Máximo = 3, Suma = 6
-
-# me quedaría con la particion B porque su máximo es menor incluso si la suma de sus diámetros es mayor. Minimizo el peor caso
-# dado que no puedo no poner un vértice, la pregunta ya no es "pongo, o no pongo?" sino que sería "¿en cuál pongo?"
-
 from grafo import Grafo
 from validador import calcular_distancia_max_cluster
 import copy
@@ -98,8 +76,8 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k):
         sol_temporal[cluster].append(vertice)
         
         vertices_restantes = len(vertices) - (actual + 1)
-        #poda: no me alcanzan los vertices para llenar los clusters vacíos: determinar los 
-        # k clusters para que la distancia máxima de cada cluster sea mínima. Piden siempre k clusters
+        #poda: no me alcanzan los vertices para llenar los clusters vacíos: "determinar los 
+        # k clusters para que la distancia máxima de cada cluster sea mínima". Piden siempre k clusters
         if not alcanzan_vertices(vertices_restantes, sol_temporal):
             sol_temporal[cluster].pop()
             continue  # paso al siguiente cluster

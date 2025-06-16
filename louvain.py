@@ -7,7 +7,6 @@ import os
 import sys
 
 # con esto calculamos el cambio en modularidad al mover un nodo a una comunidad
-# se me pasó en la versión anterior, por eso tardaba tanto, estaba calculando la modularidad completa cada vez que se movía un nodo
 
 # parámetros:
 # - m: suma total de pesos de aristas / 2
