@@ -21,26 +21,29 @@ Variables:
         0. si no se usó el cluster i
     }, para todo i entre 1 y k ==> k variables
 
-Función Objetivo: Minimizar sumatoiria de Y_i, i entre 1 y k
+Función Objetivo: Minimizar la cantidad de clusters utilizados
+    min ∑_{i=1}^{k} Y_i
 
 Restricciones:
     X_v,i <= Y_i
         Para que si X_v,i = 1, forcemos a que Y_i también valga 1, ya que se está usando el cluster i (hay que contarlo)
-        V*k restricciones (?)
+        V*k restricciones
     
     La sumatoria de todos los Y_i (con i entre 1 y k) debe ser <= k
         Para que no se puedan usar más de k clusters
         Una sola restricción
 
-    La synatirua de tidis kis X_v,i (i entre 1 y k) debe ser = 1 para todo vértice v
+    La sumatoria de todos los X_v,i (i entre 1 y k) debe ser = 1 para todo vértice v
         Para que cada vértice pertenezca a un sólo cluster
         V restricciones
 
     X_u,i + X_v,i <= 1 para cada i entre 1 y k, y para cada par de vértices u,v cuya distancia sea > C
-        Para que u y v no puedan estar en el mismo cluster si los separa una distancia > C
-        k * (?) restricciones
+    Para que u y v no puedan estar en el mismo cluster si los separa una distancia > C
+    k * |{(u,v) ∈ V x V : u < v y d(u,v) > C}| restricciones
 
-    cantidad total de restricciones = V*k + 1 + V + k*(?) ==> entre V*k y k*(?) idk
+
+    cantidad total de restricciones = |V| * k (activación) + 1 (límite) + |V| (asignación) + |P_C| * k (diámetro)
+    ⇒ Total ≈ |V| * (k + 1) + 1 + |P_C| * k
 '''
 
 
