@@ -90,13 +90,15 @@ def extraer_clusters(x_vars, k):
 
 # copypaste de la de main.py
 def imprimir_asignaciones(clusters, diametro, duracion):
-    print("Asignación:")
+    print("\n\033[35mAsignación:\033[m")
     for cluster, vertices in clusters.items():
         print(f"{cluster}: {vertices}")
-    print(f"\033[96mTiempo total de ejecución: {duracion:.2f} segundos\033[0m")
-    print(f"Maxima distancia dentro del cluster:\033[92m {diametro}\033[0m")
+    print(f"\nMaxima distancia dentro del cluster:\033[92m {diametro}\033[0m")
 
 
+# main que ejecuta el algoritmo con todos los archivos de la cátedra y muestra la asignación que hace"
+# muestra si el resultado del algoritmo coincide con el esperado por la cátedra
+# uso: python3 pl.py
 if __name__ == "__main__":
     archivos = [("10_3.txt", 2, 2), ("10_3.txt", 5, 1), ("22_3.txt", 3, 2), ("22_3.txt", 4, 2), ("22_3.txt", 10, 1), ("22_5.txt", 2, 2), ("22_5.txt", 7, 1), ("30_3.txt", 2, 3), ("30_3.txt", 6, 2), ("30_5.txt", 5, 2), ("40_5.txt", 3, 2), ("45_3.txt", 7, 3), ("50_3.txt", 3, 3)]
 
@@ -106,7 +108,9 @@ if __name__ == "__main__":
         grafo = cargar_grafo(archivo)
         distancias, max_dist = grafo.calcular_distancias()
 
-        print(f"\n\033[35mArchivo: {archivo}\033[0m")
+        print("\n\033[96m----------------------------------------------------------------")
+        print(f"Archivo: {archivo}")
+        print("----------------------------------------------------------------\033[0m")
         inicio = time()
         solucion_encontrada = False
 
@@ -123,19 +127,52 @@ if __name__ == "__main__":
                 clusters = extraer_clusters(x_vars, k)
                 diametros = [calcular_distancia_max_cluster(grafo, nodos) for nodos in clusters.values()]
                 diametro_max = max(diametros) if diametros else 0
-                es_valido = validador_clustering(grafo, k, C, clusters)
-                if es_valido:
-                    print("\033[92mEl validador dice que la solución es válida\033[0m")
-                else:
-                    print("\033[31mEl validador dice que la solución no es válida\033[0m")
                 imprimir_asignaciones(clusters, diametro_max, fin - inicio)
                 solucion_encontrada = True
                 break
 
         if not solucion_encontrada:
-            print("\033[31mNo se encontró solución para ningún valor entre 0 y C C.\033[0m")
+            print("\033[31mNo se encontró solución para ningún valor entre 0 y C.\033[0m")
 
         if diametro_max == c_esperado:
             print(f"Máxima distancia esperada dentro del cluster: \033[92m{c_esperado}\033[0m")
         else:
             print(f"Máxima distancia esperada dentro del cluster: \033[31m{c_esperado}\033[0m")
+
+        print(f"\033[96mTiempo total de ejecución: {fin-inicio:.2f} segundos\033[0m")
+
+'''
+# main para ejecutar el algoritmo con el archivo pasado y un cierto valor k, y mostrar la asignación que hace
+# uso: python3 pl.py <ruta_archivo_grafo.txt> <k>
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Uso: python main_pl.py <archivo_grafo> <k_clusters>")
+        sys.exit(1)
+
+    archivo = sys.argv[1]
+    k = int(sys.argv[2])
+
+    grafo = cargar_grafo(archivo)
+    distancias, max_dist = grafo.calcular_distancias()
+
+    inicio = time()
+    solucion_encontrada = False
+
+    for C in range(max_dist + 1):
+        modelo, x_vars = construir_modelo(grafo, k, C, distancias)
+        modelo.solve(PULP_CBC_CMD(msg=False))
+
+        if modelo.status == 1:
+            clusters = extraer_clusters(x_vars, k)
+            diametros = [calcular_distancia_max_cluster(grafo, nodos) for nodos in clusters.values()]
+            diametro_max = max(diametros) if diametros else 0
+            if validador_clustering(grafo, k, C, clusters):
+                fin = time()
+                imprimir_asignaciones(clusters, diametro_max, fin - inicio)
+                solucion_encontrada = True
+                break
+
+    if not solucion_encontrada:
+        print("\033[31mNo se encontró solución válida para ningún valor de C.\033[0m")
+
+'''
