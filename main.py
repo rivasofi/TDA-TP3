@@ -5,11 +5,11 @@ import sys
 import time
 
 def imprimir_asignaciones(clusters, diametro, duracion):
-    print("Asignación:")
+    print("\n\033[35mAsignación:\033[m")
     for cluster, vertices in clusters.items():
         print(f"{cluster}: {vertices}")
-    print("Maxima distancia dentro del cluster:", diametro)
-    print(f"Tiempo total de ejecución: {duracion:.2f} segundos")
+    print("Maxima distancia dentro del cluster: \033[92m", diametro, "\033[0m")
+    print(f"\033[96mTiempo total de ejecución: {duracion:.2f} segundos\033[0m")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
