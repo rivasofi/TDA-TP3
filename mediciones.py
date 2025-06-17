@@ -15,11 +15,15 @@ from util import time_algorithm
 
 from script import *
 
+from script_louvain import *
+
 from backtracking import clustering_optimizacion
 
 from parser import *
 
 from pl import *
+
+from louvain import louvain
 
 
 
@@ -176,7 +180,6 @@ def graficar_medicion_k_3_pl_log(results, x):
     ax.set_xlabel('Cantidad de nodos V')
     ax.set_ylabel('Tiempo de ejecución (s)')
 
-    # Función de ajuste: n log n
     f = lambda x, c1, c2: c1 * x * np.log2(x) + c2
     c, pcov = sp.optimize.curve_fit(f, x, [results[n] for n in x])
     print(f"c_1 = {c[0]}, c_2 = {c[1]}")
@@ -207,7 +210,6 @@ def graficar_medicion_k_6_pl_log(results, x):
     ax.set_xlabel('Cantidad de nodos V')
     ax.set_ylabel('Tiempo de ejecución (s)')
 
-    # Función de ajuste: n log n
     f = lambda x, c1, c2: c1 * x * np.log2(x) + c2
     c, pcov = sp.optimize.curve_fit(f, x, [results[n] for n in x])
     print(f"c_1 = {c[0]}, c_2 = {c[1]}")
@@ -229,15 +231,53 @@ def graficar_error_k_6_pl_log(c, results, x, f):
     ax.set_ylabel('Error absoluto (s)')
     fig.savefig(f"error-k_6_pl_nlogn.png", dpi=300, bbox_inches='tight')
 
+def graficar_medicion_louvain(results, x):
+    ax: plt.Axes
+    fig, ax = plt.subplots()
+    ax.plot(x, [results[i] for i in x], label="Medición")
+    ax.set_title('Tiempo de ejecución de algoritmo de louvain con cliques de tamaño 100')
+    ax.set_xlabel('Cantidad de cliques')
+    ax.set_ylabel('Tiempo de ejecución (s)')
+
+    f = lambda x, c1, c2: c1 * x * np.log2(x) + c2
+    c, pcov = sp.optimize.curve_fit(f, x, [results[n] for n in x])
+    print(f"c_1 = {c[0]}, c_2 = {c[1]}")
+    r = np.sum((f(np.array(x), *c) - [results[n] for n in x]) ** 2)
+    print(f"Error cuadrático total: {r}")
+
+    ax.plot(x, [f(n, *c) for n in x], 'r--', label="Ajuste n log n")
+    ax.legend()
+    fig.savefig(f"ajuste-louvain_t_100.png", dpi=300, bbox_inches='tight')
+    graficar_error_louvain(c, results, x, f)
+
+def graficar_error_louvain(c, results, x, f):
+    ax: plt.Axes
+    fig, ax = plt.subplots()
+    errors = [np.abs(f(n, *c) - results[n]) for n in x]
+    ax.plot(x, errors)
+    ax.set_title('Error de ajuste (n log n)')
+    ax.set_xlabel('Cantidad de cliques')
+    ax.set_ylabel('Error absoluto (s)')
+    fig.savefig(f"error-louvain_t_100.png", dpi=300, bbox_inches='tight')
+
+
 
 def obtener_volumenes(minimo, maximo, cantidad):
     return np.linspace(minimo, maximo, cantidad).astype(int)
 
 
+def generar_grafo_louvain(cantidad):
+    tamanio = 50 #numero de vértices en un clique
+    grafo = generar_cliques_con_puentes(cantidad, tamanio)
+    nombre_archivo = f"{cantidad}_cliques_de_tamanio_{tamanio}"
+    guardar_grafo_en_archivo(grafo, nombre_archivo)
+    return grafo
+
 def generar_grafo(n):
     archivo = f"{n}.txt"
     generar_grafo_txt(n, aristas_extra=n*2)
     return cargar_grafo(archivo)
+
 
 def obtener_args_algoritmo_k_3_bt(n):
     grafo = generar_grafo(n)
@@ -263,8 +303,6 @@ def obtener_args_algoritmo_k_6_pl(n):
     distancias, max_dist = grafo.calcular_distancias()
     return [grafo, k, max_dist, distancias]
 
-
-
 def obtener_args_algoritmo_k_9_pl(n):
 
     grafo = generar_grafo(n)
@@ -272,6 +310,9 @@ def obtener_args_algoritmo_k_9_pl(n):
     distancias, max_dist = grafo.calcular_distancias()
     return [grafo, k, max_dist, distancias]
 
+def obtener_args_louvain(cantidad):
+    grafo = generar_grafo_louvain(cantidad)
+    return [grafo]
 
 
 def ejecutar_algoritmo_bt(grafo, k):
@@ -297,6 +338,9 @@ def ejecutar_algoritmo_pl(grafo, k, max_dist, distancias):
     if not solucion_encontrada:
         print("\033[31mNo se encontró solución válida para ningún valor de C.\033[0m")
 
+def ejecutar_algoritmo_louvain(grafo):
+    print(f"Corriendo Algoritmo")
+    return louvain(grafo)
 
 if __name__ == '__main__':
     seed(12345)
@@ -307,40 +351,48 @@ if __name__ == '__main__':
     
     x_n = obtener_volumenes(10,20,5)
 
-    #results_k_3_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_3_bt)
-    #graficar_medicion_k_3(results, x_n)
+    x_l = obtener_volumenes(50, 300, 6)
+
+    results_k_3_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_3_bt)
+    graficar_medicion_k_3(results_k_3_bt, x_n)
     #Error cuadrático total: 0.05693380316546821
     #tarda en medir 169.42s
 
-    #results_k_6_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_6_bt)
-    #graficar_medicion_k_6(results, x_n)
+    results_k_6_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_6_bt)
+    graficar_medicion_k_6(results_k_6_bt, x_n)
     #Error cuadrático total: 417.07352172676906
     #tarda en medir 2933.43s
 
-    #results_k_3_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_3_pl)
-    #graficar_medicion_k_3_pl(results_k_3_pl, x_n)
+    results_k_3_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_3_pl)
+    graficar_medicion_k_3_pl(results_k_3_pl, x_n)
     #Error cuadrático total: 0.0004449706485052979
     #tarda en medir 4.90s
 
-    #results_k_3_pl_log = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_3_pl)
-    #graficar_medicion_k_3_pl_log(results_k_3_pl_log, x_n)
+    results_k_3_pl_log = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_3_pl)
+    graficar_medicion_k_3_pl_log(results_k_3_pl_log, x_n)
     #Error cuadrático total: 0.00012624563485940898
     #tarda en medir 4.59s
 
-    #results_k_6_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_6_pl)
-    #graficar_medicion_k_6_pl(results_k_6_pl, x_n)
+    results_k_6_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_6_pl)
+    graficar_medicion_k_6_pl(results_k_6_pl, x_n)
     #Error cuadrático total: 0.011780692777802911
     #tarda en medir 12.55s
 
-    #results_k_6_pl_log = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_6_pl)
-    #graficar_medicion_k_6_pl_log(results_k_6_pl_log, x_n)
+    results_k_6_pl_log = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_6_pl)
+    graficar_medicion_k_6_pl_log(results_k_6_pl_log, x_n)
     #Error cuadrático total: 0.01478876101023637
     #tarda en medir 12.80s
 
-    #results_k_9_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_9_pl)
-    #graficar_medicion_k_9_pl(results_k_9_pl, x_n)
+    results_k_9_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_9_pl)
+    graficar_medicion_k_9_pl(results_k_9_pl, x_n)
     #Error cuadrático total: 0.057407087759339614
     #tarda en medir 40.55s
+
+    results_louvain = time_algorithm(ejecutar_algoritmo_louvain, x_l, obtener_args_louvain)
+    graficar_medicion_louvain(results_louvain, x_l)
+    #Error cuadrático total: 0.30778280201355995
+    #tarda en medir 139.04s
+
 
 
 
