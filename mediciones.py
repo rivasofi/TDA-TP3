@@ -391,7 +391,8 @@ if __name__ == '__main__':
     results_louvain = time_algorithm(ejecutar_algoritmo_louvain, x_l, obtener_args_louvain)
     graficar_medicion_louvain(results_louvain, x_l)
     #Error cuadrático total: 0.30778280201355995
-    #tarda en medir 139.04s
+    #tarda en medir 620.94s
+
 
 
 
