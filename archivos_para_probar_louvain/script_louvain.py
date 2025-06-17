@@ -22,7 +22,7 @@ def generar_cliques_con_puentes(num_cliques, tamano_clique):
 
 # escribir el archivo
 def guardar_grafo_en_archivo(grafo, nombre_archivo):
-    path = f"archivos_para_probar_louvain/{nombre_archivo}.txt"
+    path = f"{nombre_archivo}.txt"
     with open(path, "w") as f:
         f.write("# after the war I went back to new york\n")
         for v, w in grafo.aristas():
