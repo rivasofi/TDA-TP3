@@ -354,7 +354,7 @@ if __name__ == '__main__':
     x_l = obtener_volumenes(50, 300, 6)
 
     results_k_3_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_3_bt)
-    graficar_medicion_k_3(results_k_3_bt, x_n)
+    graficar_medicion_k_3_bt(results_k_3_bt, x_n)
     #Error cuadrático total: 0.05693380316546821
     #tarda en medir 169.42s
 
