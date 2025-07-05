@@ -1,27 +1,30 @@
 from grafo import Grafo
 from collections import deque
 import copy
-from louvain import louvain
+from greedy import maximizar_modularidad
 
 # sol optima y sol temporal de tipo dicc cluster:[vertices]
 
-def obtener_solucion_inicial_louvain(grafo, k):
-    comunidades_louvain = louvain(grafo)
+def obtener_solucion_inicial_greedy(grafo, k):
+    lista_comunidades = maximizar_modularidad(grafo)
+    todos_nodos = set(grafo.obtener_vertices())
+    asignados = set()
 
-    # Adaptar la cantidad a k, si hay más o menos
-    while len(comunidades_louvain) > k:
-        comunidades_louvain.sort(key=len)  # fusionar los más chicos
-        fusionado = comunidades_louvain[0].union(comunidades_louvain[1])
-        comunidades_louvain = comunidades_louvain[2:] + [fusionado]
+    sol_optima = generar_clusters(k)
+    i = 0
 
-    while len(comunidades_louvain) < k:
-        comunidades_louvain.sort(key=len, reverse=True)
-        grande = list(comunidades_louvain[0])
-        mitad = len(grande) // 2
-        comunidades_louvain = [set(grande[:mitad]), set(grande[mitad:])] + comunidades_louvain[1:]
+    for comunidad in lista_comunidades:
+        for nodo in comunidad:
+            sol_optima[f"Cluster {i % k}"].append(nodo)
+            asignados.add(nodo)
+        i += 1
 
-    clusters = {f"Cluster {i}": list(c) for i, c in enumerate(comunidades_louvain)}
-    return clusters
+    nodos_faltantes = todos_nodos - asignados
+    for nodo in nodos_faltantes:
+        sol_optima[f"Cluster {i % k}"].append(nodo)
+        i += 1
+
+    return sol_optima
 
 def bfs_distancias(grafo, origen):
     distancias = {}
@@ -168,8 +171,12 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k, distanci
     return mejor_solucion
 
 def clustering_optimizacion(grafo, k):
-    # Usamos greedy como solución inicial para establecer cota
-    sol_optima = obtener_solucion_inicial_louvain(grafo, k)
+    # usamos greedy como solución inicial para establecer cota
+    sol_optima = obtener_solucion_inicial_greedy(grafo, k)
+    
+    # si no se pudo obtener una solución inicial válida, retornamos None
+    if sol_optima is None:
+        return None, None
     
     sol_temporal = generar_clusters(k)
     
