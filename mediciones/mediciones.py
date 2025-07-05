@@ -15,7 +15,7 @@ from util import time_algorithm
 
 from script import *
 
-from script_louvain import *
+from archivos_para_probar_louvain.script_louvain import *
 
 from backtracking import clustering_optimizacion
 
@@ -349,54 +349,82 @@ if __name__ == '__main__':
 
     inicio = time()
     
-    x_n = obtener_volumenes(10,20,5)
+    x_n = obtener_volumenes(10,50,5)
 
     x_l = obtener_volumenes(50, 300, 6)
 
+    print("k3_bt")
+    inicio_k3_bt = time()
     results_k_3_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_3_bt)
     graficar_medicion_k_3_bt(results_k_3_bt, x_n)
     #Error cuadrático total: 0.05693380316546821
+    final_k3_bt = time()
+    print(f"tarda en medir {final_k3_bt - inicio_k3_bt:.2f}s")
     #tarda en medir 169.42s
 
+
+    print("k6_bt")
+    inicio_k6_bt = time()
     results_k_6_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_6_bt)
     graficar_medicion_k_6(results_k_6_bt, x_n)
     #Error cuadrático total: 417.07352172676906
+    final_k6_bt = time()
+    print(f"tarda en medir {final_k6_bt - inicio_k6_bt:.2f}s")
     #tarda en medir 2933.43s
 
+    print("k3_pl")
+    inicio_k3_pl = time()
     results_k_3_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_3_pl)
     graficar_medicion_k_3_pl(results_k_3_pl, x_n)
     #Error cuadrático total: 0.0004449706485052979
+    final_k3_pl = time()
+    print(f"tarda en medir {final_k3_pl - inicio_k3_pl:.2f}s")
     #tarda en medir 4.90s
 
+    print("k3_pl_log")
+    inicio_k3_pl_log = time()
     results_k_3_pl_log = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_3_pl)
     graficar_medicion_k_3_pl_log(results_k_3_pl_log, x_n)
     #Error cuadrático total: 0.00012624563485940898
+    final_k3_pl_log = time()
+    print(f"tarda en medir {final_k3_pl_log - inicio_k3_pl_log:.2f}s")
     #tarda en medir 4.59s
 
+    print("k6_pl")
+    inicio_k6_pl = time()
     results_k_6_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_6_pl)
     graficar_medicion_k_6_pl(results_k_6_pl, x_n)
     #Error cuadrático total: 0.011780692777802911
+    final_k6_pl = time()
+    print(f"tarda en medir {final_k6_pl - inicio_k6_pl:.2f}s")
     #tarda en medir 12.55s
 
+    print("k6_pl_log")
+    inicio_k6_pl_log = time()
     results_k_6_pl_log = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_6_pl)
     graficar_medicion_k_6_pl_log(results_k_6_pl_log, x_n)
     #Error cuadrático total: 0.01478876101023637
+    final_k6_pl_log = time()
+    print(f"tarda en medir {final_k6_pl_log - inicio_k6_pl_log:.2f}s")
     #tarda en medir 12.80s
 
+    print("k9_pl")
+    inicio_k9_pl = time()
     results_k_9_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_9_pl)
     graficar_medicion_k_9_pl(results_k_9_pl, x_n)
     #Error cuadrático total: 0.057407087759339614
+    final_k9_pl = time()
+    print(f"tarda en medir {final_k9_pl - inicio_k9_pl:.2f}s")
     #tarda en medir 40.55s
 
+    print("louvain")
+    inicio_louvain = time()
     results_louvain = time_algorithm(ejecutar_algoritmo_louvain, x_l, obtener_args_louvain)
     graficar_medicion_louvain(results_louvain, x_l)
     #Error cuadrático total: 0.30778280201355995
+    final_louvain = time()
+    print(f"tarda en medir {final_louvain - inicio_louvain:.2f}s")
     #tarda en medir 620.94s
-
-
-
-
-
 
 
     fin = time()
