@@ -1,10 +1,3 @@
-import sys
-import os
-import time
-from grafo import Grafo
-from main import cargar_grafo
-from backtracking import calcular_distancia_max_cluster
-
 def calcular_modularidad(grafo, lista_comunidades, total_peso_aristas):
     modularidad = 0
     for comunidad in lista_comunidades:
