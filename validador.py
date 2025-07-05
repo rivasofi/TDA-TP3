@@ -55,9 +55,9 @@ def calcular_distancia_max_cluster(grafo, vertices):
             if v == w:
                 continue
             distancia = calcular_distancia_vertices(grafo, v, w)
-            #si no hay camino el cluster es invalido, debemos poder llegar de todos a todos con 1 o mas de distancia, pongo infinito si no hay así lo considera
-            #invalido en la validación posterior
-            if distancia == None: distancia = float('inf')
+            #la distancia se mide en el grafo original. si no hay camino, es infinita.
+            if distancia == None:
+                distancia = float('inf')
             distancia_maxima = max(distancia, distancia_maxima)
             
     return distancia_maxima
@@ -75,11 +75,9 @@ def validador_clustering(grafo, k, c, solucion_propuesta):
     #cuales vertices uso? lleno usados
     for cluster, vertices in solucion_propuesta.items():
         for vertice in vertices:
-            if vertice not in usados:
-                usados.add(vertice)
-            else:
-                #si repetimos vertice, está mal, no es clustering correcto
-                return False
+            if vertice in usados:
+                return False  # nodos repetidos
+            usados.add(vertice)
 
     #todo vértice pertenezca a un cluster
     #uso todos?
@@ -99,7 +97,7 @@ def validador_clustering(grafo, k, c, solucion_propuesta):
 Dado el código realizado en el presente archivo, encontramos las siguientes complejidades:
 
 calcular_distancia_vertices(grafo, v1, v2) -> O(V+E)
-calcular_distancia_max_cluster(grafo, vertices) -> O(n^2 * (V+E))
+calcular_distancia_max_cluster(grafo, vertices) -> O(n^2 * (V+E)), donde n es el tamaño del clúster.
 validador_clustering(grafo, k, c, solucion_propuesta) -> O(k * V^2 * (V+E))
 
 Con estas funciones, podemos verificar si una solución propuesta para el problema de clustering por bajo diámetro es correcta o no, realizandolo en tiempo
