@@ -108,14 +108,13 @@ def cluster_desbalanceado(clusters, total_vertices, k):
             return True
     return False
 
-def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k, distancias, diametros_actuales):
+def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k, distancias, diametros_actuales, mejor_diametro_actual):
     # ya asigne todos
     if actual >= len(vertices):
         diametro_actual = max(diametros_actuales.values())
-        diametro_optimo = calcular_mayor_diametro_cluster(sol_optima, distancias)
-        if diametro_optimo == 0 or diametro_actual < diametro_optimo:
-            return copy.deepcopy(sol_temporal)
-        return sol_optima
+        if mejor_diametro_actual is None or diametro_actual < mejor_diametro_actual:
+            return copy.deepcopy(sol_temporal), diametro_actual
+        return sol_optima, mejor_diametro_actual
     
     vertice = vertices[actual]
     mejor_solucion = sol_optima
@@ -151,24 +150,22 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k, distanci
             
         #poda: ¿supero el diametro maximo de lo que ya tengo?
         diametro_parcial = max(diametros_actuales.values())
-        diametro_optimo = calcular_mayor_diametro_cluster(sol_optima, distancias)
-        if diametro_optimo != 0 and diametro_parcial >= diametro_optimo:
+        if mejor_diametro_actual is not None and diametro_parcial >= mejor_diametro_actual:
             sol_temporal[cluster].pop()
             diametros_actuales[cluster] = diametro_anterior
             continue
         
-        incluyendo = clustering_bt(grafo, vertices, actual + 1, mejor_solucion, sol_temporal, k, distancias, diametros_actuales)
-        diametro_incluyendo = calcular_mayor_diametro_cluster(incluyendo, distancias)
-        diametro_mejor_solucion = calcular_mayor_diametro_cluster(mejor_solucion, distancias)
+        incluyendo, nuevo_diametro_sol = clustering_bt(grafo, vertices, actual + 1, mejor_solucion, sol_temporal, k, distancias, diametros_actuales, mejor_diametro_actual)
         
-        if diametro_mejor_solucion == 0 or diametro_incluyendo < diametro_mejor_solucion:
+        if mejor_diametro_actual is None or nuevo_diametro_sol < mejor_diametro_actual:
             mejor_solucion = copy.deepcopy(incluyendo)
+            mejor_diametro_actual = nuevo_diametro_sol
             
         #saco vertice de ese cluster
         sol_temporal[cluster].pop()
         diametros_actuales[cluster] = diametro_anterior
 
-    return mejor_solucion
+    return mejor_solucion, mejor_diametro_actual
 
 def clustering_optimizacion(grafo, k):
     # usamos greedy como solución inicial para establecer cota
@@ -186,10 +183,9 @@ def clustering_optimizacion(grafo, k):
         return None, None
 
     distancias = precalcular_distancias(grafo)
-    
+    mejor_diametro = calcular_mayor_diametro_cluster(sol_optima, distancias)
     diametros_actuales = {nombre: 0 for nombre in sol_temporal}
 
-    clusters = clustering_bt(grafo, vertices, 0, sol_optima, sol_temporal, k, distancias, diametros_actuales)
-
-    diametro = calcular_mayor_diametro_cluster(clusters, distancias)
+    clusters, diametro = clustering_bt( grafo, vertices, 0, sol_optima, sol_temporal, k, distancias, diametros_actuales, mejor_diametro)
+    
     return clusters, diametro
