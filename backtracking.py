@@ -135,7 +135,7 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k, distanci
         
         vertices_restantes = len(vertices) - (actual + 1)
         #poda: no me alcanzan los vertices para llenar los clusters vacíos: "determinar los 
-        # k clusters para que la distancia máxima de cada cluster sea mínima". Piden siempre k clusters
+        # k clusters para que la distancia máxima de cada cluster sea mínima".
         if not alcanzan_vertices(vertices_restantes, sol_temporal):
             sol_temporal[cluster].pop()
             diametros_actuales[cluster] = diametro_anterior
