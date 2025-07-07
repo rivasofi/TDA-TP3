@@ -101,12 +101,11 @@ def es_cluster_vacio_anterior(clusters, indice_actual):
     return False
 
 # poda para evitar que un cluster crezca desmedidamente en relacion a otros
-def cluster_desbalanceado(clusters, total_vertices, k):
-    max_permitido = (total_vertices + k - 1) // k  # redondeo hacia arriba
-    for cluster, vertices in clusters.items():
-        if len(vertices) > max_permitido:
-            return True
-    return False
+def cluster_desbalanceado(clusters, vertices_restantes, k):
+    vacios = sum(1 for c in clusters.values() if not c)
+    if vacios == 0:
+        return False
+    return vertices_restantes < vacios
 
 def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k, distancias, diametros_actuales, mejor_diametro_actual):
     # ya asigne todos
@@ -143,7 +142,7 @@ def clustering_bt(grafo, vertices, actual, sol_optima, sol_temporal, k, distanci
             continue  # paso al siguiente cluster
         
         #poda: desbalanceo
-        if cluster_desbalanceado(sol_temporal, len(vertices), k):
+        if cluster_desbalanceado(sol_temporal, vertices_restantes, k):
             sol_temporal[cluster].pop()
             diametros_actuales[cluster] = diametro_anterior
             continue
