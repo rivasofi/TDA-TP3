@@ -4,24 +4,42 @@ import sys
 
 # Recibe un n (cantidad vértices) y un aristas_extra (cantidad de aristas además de las n-1 necesarias)
 # Genera un grafo no dirigido, no pesado, conectado, con n vértices.
-def generar_grafo_txt(n, aristas_extra):
+# def generar_grafo_txt(n, aristas_extra):
 
+#     aristas = set()
+#     nodos = list(range(n))
+#     random.shuffle(nodos)
+
+#     for i in range(1, n):
+#         u = nodos[i]
+#         v = random.choice(nodos[:i])
+#         aristas.add(tuple(sorted((u, v))))
+
+#     while len(aristas) < n - 1 + aristas_extra:
+#         u, v = random.sample(nodos, 2)
+#         if u != v:
+#             aristas.add(tuple(sorted((u, v))))
+
+#     archivo_salida = f"{n}.txt"
+#     with open(archivo_salida, "w") as f:
+#         f.write("# turururu\n")
+#         for u, v in sorted(aristas):
+#             f.write(f"{u},{v}\n")
+
+def generar_grafo_txt(n, aristas_extra):
     aristas = set()
     nodos = list(range(n))
     random.shuffle(nodos)
 
     for i in range(1, n):
-        u = nodos[i]
-        v = random.choice(nodos[:i])
-        aristas.add(tuple(sorted((u, v))))
+        aristas.add((nodos[i-1], nodos[i]))
 
     while len(aristas) < n - 1 + aristas_extra:
         u, v = random.sample(nodos, 2)
-        if u != v:
+        if u != v and (u, v) not in aristas and (v, u) not in aristas:
             aristas.add(tuple(sorted((u, v))))
 
-    archivo_salida = f"{n}.txt"
-    with open(archivo_salida, "w") as f:
+    with open(f"{n}.txt", "w") as f:
         f.write("# turururu\n")
         for u, v in sorted(aristas):
             f.write(f"{u},{v}\n")

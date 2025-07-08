@@ -275,7 +275,7 @@ def generar_grafo_louvain(cantidad):
 
 def generar_grafo(n):
     archivo = f"{n}.txt"
-    generar_grafo_txt(n, aristas_extra=n*2)
+    generar_grafo_txt(n, aristas_extra= int(n*0.3))
     return cargar_grafo(archivo)
 
 
@@ -349,7 +349,7 @@ if __name__ == '__main__':
 
     inicio = time()
     
-    x_n = obtener_volumenes(10,50,5)
+    x_n = obtener_volumenes(20,50,5)
 
     x_l = obtener_volumenes(50, 300, 6)
 
@@ -357,77 +357,78 @@ if __name__ == '__main__':
     inicio_k3_bt = time()
     results_k_3_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_3_bt)
     graficar_medicion_k_3_bt(results_k_3_bt, x_n)
-    #Error cuadrático total: 0.05693380316546821
+    #Error cuadrático total: 0.6508555824227805
     final_k3_bt = time()
     print(f"tarda en medir {final_k3_bt - inicio_k3_bt:.2f}s")
-    #tarda en medir 169.42s
+    #tarda en medir 7663.60s
 
 
     print("k6_bt")
     inicio_k6_bt = time()
     results_k_6_bt = time_algorithm(ejecutar_algoritmo_bt, x_n, obtener_args_algoritmo_k_6_bt)
     graficar_medicion_k_6(results_k_6_bt, x_n)
-    #Error cuadrático total: 417.07352172676906
+    #Error cuadrático total: 3.4027106668773985
     final_k6_bt = time()
     print(f"tarda en medir {final_k6_bt - inicio_k6_bt:.2f}s")
-    #tarda en medir 2933.43s
+    #tarda en medir 205.33s
 
     print("k3_pl")
     inicio_k3_pl = time()
     results_k_3_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_3_pl)
     graficar_medicion_k_3_pl(results_k_3_pl, x_n)
-    #Error cuadrático total: 0.0004449706485052979
+    #Error cuadrático total: 0.2974281745599414
     final_k3_pl = time()
     print(f"tarda en medir {final_k3_pl - inicio_k3_pl:.2f}s")
-    #tarda en medir 4.90s
+    #tarda en medir 144.64s
 
     print("k3_pl_log")
     inicio_k3_pl_log = time()
     results_k_3_pl_log = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_3_pl)
     graficar_medicion_k_3_pl_log(results_k_3_pl_log, x_n)
-    #Error cuadrático total: 0.00012624563485940898
+    #Error cuadrático total: 5.267768310007417
     final_k3_pl_log = time()
     print(f"tarda en medir {final_k3_pl_log - inicio_k3_pl_log:.2f}s")
-    #tarda en medir 4.59s
+    #tarda en medir 146.19s
 
     print("k6_pl")
     inicio_k6_pl = time()
     results_k_6_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_6_pl)
     graficar_medicion_k_6_pl(results_k_6_pl, x_n)
-    #Error cuadrático total: 0.011780692777802911
+    #Error cuadrático total: 6.159233102842426
     final_k6_pl = time()
     print(f"tarda en medir {final_k6_pl - inicio_k6_pl:.2f}s")
-    #tarda en medir 12.55s
+    #tarda en medir 719.33s
 
     print("k6_pl_log")
     inicio_k6_pl_log = time()
     results_k_6_pl_log = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_6_pl)
     graficar_medicion_k_6_pl_log(results_k_6_pl_log, x_n)
-    #Error cuadrático total: 0.01478876101023637
+    #Error cuadrático total: 261.1167876171511
     final_k6_pl_log = time()
     print(f"tarda en medir {final_k6_pl_log - inicio_k6_pl_log:.2f}s")
-    #tarda en medir 12.80s
+    #tarda en medir 714.86s
 
     print("k9_pl")
     inicio_k9_pl = time()
     results_k_9_pl = time_algorithm(ejecutar_algoritmo_pl, x_n, obtener_args_algoritmo_k_9_pl)
     graficar_medicion_k_9_pl(results_k_9_pl, x_n)
-    #Error cuadrático total: 0.057407087759339614
+    #Error cuadrático total: 148.21555988420957
     final_k9_pl = time()
     print(f"tarda en medir {final_k9_pl - inicio_k9_pl:.2f}s")
-    #tarda en medir 40.55s
+    #tarda en medir 2068.74s
 
     print("louvain")
     inicio_louvain = time()
     results_louvain = time_algorithm(ejecutar_algoritmo_louvain, x_l, obtener_args_louvain)
     graficar_medicion_louvain(results_louvain, x_l)
-    #Error cuadrático total: 0.30778280201355995
+    #Error cuadrático total: 0.323231042741351
     final_louvain = time()
     print(f"tarda en medir {final_louvain - inicio_louvain:.2f}s")
-    #tarda en medir 620.94s
+    #tarda en medir 137.77s
 
 
     fin = time()
 
     total = fin - inicio
     print(f"tarda en medir {total:.2f}s")
+    # total medicion 11800.45s
